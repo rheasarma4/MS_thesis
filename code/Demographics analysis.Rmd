@@ -65,6 +65,9 @@ thesis_data<- read.csv("~/Desktop/Rhea MS thesis/MS_thesis/data/data_compiled.cs
 
     # replace factor values with labels that match food and brain 
     thesis_data$Income<-factor(thesis_data$Income,levels=0:5,labels = c("<$20,000","$20,000-$35,000","$36,000-$50,000","$51,000-$75,000","$76,000-$100,000",">$100,000"))
+
+    #### Export data. This is the dataset we will be using for all the analysis ####
+    write.csv(thesis_data,"~/Desktop/Rhea MS thesis/MS_thesis/data/thesis_data.csv", row.names = FALSE)
     ```
 
 4.  Inspecting dataset
