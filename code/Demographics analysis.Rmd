@@ -3,23 +3,23 @@ title: "Thesis analysis"
 author: "Rhea Sarma" 
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document:
-    toc: yes
-    toc_depth: 4
-    toc_float: yes
   pdf_document:
     toc: yes
     toc_depth: '4'
   word_document:
     toc: yes
     toc_depth: '4'
+  html_document:
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
 header-includes: 
   \usepackage{graphicx}
 editor_options: 
   chunk_output_type: console
 ---
 
-This document will have the analysis part for the MS thesis.
+This document will have the demographic analysis part for the MS thesis.
 
 1.  Load libraries
 

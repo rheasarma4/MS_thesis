@@ -1,0 +1,326 @@
+---
+title: "Thesis Analysis"
+author: "Rhea Sarma" 
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+header-includes:
+- \usepackage{graphicx}
+- \usepackage{float}
+- \setlength{\emergencystretch}{3em}
+geometry: a4paper, margin=1in
+fontsize: 11pt
+editor_options:
+  chunk_output_type: console
+---
+
+Checking the relationship between BIS, BAS, meal intake and EAH intake variables.
+
+**AIM 1 : Does BIS and BAS influences eating in absence of hunger?**
+
+```{r}
+library(haven)
+library(dplyr)
+library(ggplot2)
+```
+
+1.  Load dataset
+
+```{r}
+thesis_data<-read.csv("~/Desktop/Rhea MS thesis/MS_thesis/data/thesis_data.csv")
+```
+
+2.  My IV's of interest are `bis` `bas` `bas_funseeking` `bas_drive` `bas_rewardresp`
+
+My DV's of interest are `meal_grams_consumed` `meal_kcal_consumed` `eah_grams_consumed_foodonly` `eah_kcal_consumed`
+
+1.  Checking normality and homogeneity of variance assumptions and conducting visualizations
+
+```{r}
+# For variable BIS
+qqnorm(thesis_data$bis)
+qqline(thesis_data$bis)
+shapiro.test(thesis_data$bis) #met normality
+
+
+#Visualizing BIS data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=bis)) + geom_boxplot() + geom_jitter(height = NULL) #jitters add all the data points
+ggplot(thesis_data,aes(bis))+ geom_histogram(bins=15)+facet_grid(.~Study)
+
+# For variable BAS
+qqnorm(thesis_data$bas)
+qqline(thesis_data$bas)
+shapiro.test(thesis_data$bas) #met normality
+
+
+#Visualizing BAS data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=bas)) + geom_boxplot() + geom_jitter(height = NULL) 
+ggplot(thesis_data,aes(bas))+geom_histogram(bins=15)+facet_grid(.~Study)
+
+# For variable BAS funseeking
+qqnorm(thesis_data$bas_funseeking)
+qqline(thesis_data$bas_funseeking)
+shapiro.test(thesis_data$bas_funseeking) #not normal
+
+
+#Visualizing BAS funseeking data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=bas_funseeking)) +geom_boxplot() +geom_jitter(height = NULL) 
+ggplot(thesis_data,aes(bas_funseeking))+geom_histogram(bins=15)+facet_grid(.~Study)
+
+# For variable BAS drive
+qqnorm(thesis_data$bas_drive)
+qqline(thesis_data$bas_drive)
+shapiro.test(thesis_data$bas_drive) #not normal
+
+#Visualizing BAS drive data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=bas_drive)) + geom_boxplot() + geom_jitter(height = NULL) 
+ggplot(thesis_data,aes(bas_drive))+geom_histogram(bins=15)+ facet_grid(.~Study)
+
+# For variable BAS reward responsive
+qqnorm(thesis_data$bas_rewardresp)
+qqline(thesis_data$bas_rewardresp)
+shapiro.test(thesis_data$bas_rewardresp) #not normal
+
+#Visualizing BAS reward responsive data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=bas_rewardresp)) +geom_boxplot() + geom_jitter(height = NULL) 
+ggplot(thesis_data,aes(bas_rewardresp))+geom_histogram(bins=15)+ facet_grid(.~Study)
+
+
+# For variable Meal consumed in grams
+qqnorm(thesis_data$meal_grams_consumed)
+qqline(thesis_data$meal_grams_consumed)
+shapiro.test(thesis_data$meal_grams_consumed) #not normal
+
+#Visualizing Meal consumed in grams data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=meal_grams_consumed)) + geom_boxplot() + geom_jitter(height = NULL) 
+ggplot(thesis_data,aes(meal_grams_consumed))+geom_histogram(bins=15)+facet_grid(.~Study)
+
+
+# For variable Meal consumed in kcal
+qqnorm(thesis_data$meal_kcal_consumed)
+qqline(thesis_data$meal_kcal_consumed)
+shapiro.test(thesis_data$meal_kcal_consumed) #not normal
+
+#Visualizing Meal consumed in kcal data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=meal_kcal_consumed)) + geom_boxplot() + geom_jitter(height = NULL) 
+ggplot(thesis_data,aes(meal_kcal_consumed))+geom_histogram(bins=15)+facet_grid(.~Study)
+
+
+# For variable EAH consumed in grams
+qqnorm(thesis_data$eah_grams_consumed_foodonly)
+qqline(thesis_data$eah_grams_consumed_foodonly)
+shapiro.test(thesis_data$eah_grams_consumed_foodonly) #not normal
+
+#Visualizing EAH consumed in grams data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=eah_grams_consumed_foodonly)) +geom_boxplot() + geom_jitter(height = NULL) 
+ggplot(thesis_data,aes(eah_grams_consumed_foodonly))+geom_histogram(bins=15)+facet_grid(.~Study)
+
+
+# For variable EAH consumed in kcal
+qqnorm(thesis_data$eah_kcal_consumed)
+qqline(thesis_data$eah_kcal_consumed)
+shapiro.test(thesis_data$eah_kcal_consumed) #not normal
+
+#Visualizing EAH consumed in kcal data by Study, boxplot and histogram
+ggplot(thesis_data, aes(x=Study, y=eah_kcal_consumed)) + geom_boxplot() + geom_jitter(height = NULL) 
+ggplot(thesis_data,aes(eah_kcal_consumed))+geom_histogram(bins=15)+facet_grid(.~Study)
+
+```
+
+While some of the variables didn't pass the shapiro normality test but after looking at the qqplots of these variables we can consider them as normal.
+
+3.Corrplots
+
+```{r}
+library(corrplot)
+
+cor_all <- cor(thesis_data[c("bis", "bas","bas_funseeking","bas_drive", "bas_rewardresp", "pre_eah_fullness", "meal_grams_consumed",
+                             "meal_kcal_consumed","eah_kcal_consumed", "eah_grams_consumed_foodonly")], use = "pairwise.complete.obs")
+
+cor_reach <- cor(thesis_data[thesis_data$Study == "REACH", c("bis", "bas","bas_funseeking","bas_drive", "bas_rewardresp", "pre_eah_fullness", "meal_grams_consumed","meal_kcal_consumed","eah_kcal_consumed", "eah_grams_consumed_foodonly")], use = "pairwise.complete.obs")
+
+cor_fb <- cor(thesis_data[thesis_data$Study == "FOOD_BRAIN", c("bis", "bas","bas_funseeking","bas_drive", "bas_rewardresp", "pre_eah_fullness", "meal_grams_consumed","meal_kcal_consumed","eah_kcal_consumed", "eah_grams_consumed_foodonly")], use = "pairwise.complete.obs")
+
+
+corrplot(cor_all, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+
+corrplot(cor_reach, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+
+corrplot(cor_fb, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+```{r}
+# 1. Relationship between BIS and EAH
+
+## BIS is not associated with EAH gram intake
+cor.test(thesis_data$bis, thesis_data$eah_grams_consumed_foodonly,
+         use = "pairwise.complete.obs") 
+
+## BIS is associated with EAH kcal intake
+cor.test(thesis_data$bis, thesis_data$eah_kcal_consumed, 
+         use = "pairwise.complete.obs")
+
+#2. Relationship between BAS and EAH
+
+## BAS is not associated with EAH gram intake 
+cor.test(thesis_data$bis, thesis_data$eah_grams_consumed_foodonly, 
+         use = "pairwise.complete.obs") 
+
+## BAS is not associated with EAH kcal intake
+cor.test(thesis_data$bas, thesis_data$eah_kcal_consumed, 
+         use = "pairwise.complete.obs")
+
+#3. Relationship between BAS funseeking and EAH
+
+## BAS funseeking is not associated with EAH gram intake 
+cor.test(thesis_data$bas_funseeking, 
+         thesis_data$eah_grams_consumed_foodonly, use = "pairwise.complete.obs") 
+ 
+## BAS funseeking is not associated with EAH kcal intake
+cor.test(thesis_data$bas_funseeking, 
+         thesis_data$eah_kcal_consumed, use = "pairwise.complete.obs")
+
+#4. Relationship between BAS drive and EAH
+
+## BAS drive is not associated with EAH gram intake
+cor.test(thesis_data$bas_drive,
+         thesis_data$eah_grams_consumed_foodonly, use = "pairwise.complete.obs") 
+
+## BAS drive is not associated with EAH kcal intake
+cor.test(thesis_data$bas_drive,
+         thesis_data$eah_kcal_consumed, use = "pairwise.complete.obs")
+
+#5. Relationship between BAS reward responsive and EAH
+
+## BAS reward responsive is not associated with EAH gram intake 
+cor.test(thesis_data$bas_rewardresp, 
+         thesis_data$eah_grams_consumed_foodonly, use = "pairwise.complete.obs") 
+
+## BAS reward responsive is not associated with EAH kcal intake
+cor.test(thesis_data$bas_rewardresp, 
+         thesis_data$eah_kcal_consumed, use = "pairwise.complete.obs")
+
+```
+
+Based on the correlations and corr plots we can see that `bis` is negativley related with `eah_kcal_consumed`
+
+4.  Conducting levene's test on `bis` and `eah_kcal_consumed` by Study and then t-test on `bis` and `eah_kcal_consumed` to see if there is study effect.
+
+```{r}
+library(car)
+#For bis
+leveneTest(
+bis~as.factor(Study), data=thesis_data)
+
+#For eah_kcal_consumed
+leveneTest(
+eah_kcal_consumed~as.factor(Study), data=thesis_data)
+
+#Assumptions for homegenity in variances are met
+
+#Conducting indepedent t-test on bis to see study effect
+t.test(thesis_data[thesis_data$Study == "REACH",]$bis, 
+       thesis_data[thesis_data$Study  == "FOOD_BRAIN",]$bis,
+       alternative = "two.sided", var.equal = TRUE)
+
+#Conducting indepedent t-test on bis to see study effect
+t.test(thesis_data[thesis_data$Study == "REACH",]$eah_kcal_consumed, thesis_data[thesis_data$Study  == "FOOD_BRAIN",]$eah_kcal_consumed, 
+       alternative = "two.sided", var.equal = TRUE)
+
+
+#Visualizing 
+ggplot(thesis_data, aes(x=Study, y=bis)) + 
+geom_boxplot() +
+geom_jitter(height = NULL)
+
+ggplot(thesis_data, aes(x=Study, y=eah_kcal_consumed)) + 
+  geom_boxplot() + 
+  geom_jitter(height = NULL) 
+thesis_data$Age.in.years
+
+```
+
+Based on these results, BIS scores are higher in REACH study and EAH consumption in kcal was similar in both the studies.
+
+5.  Linear regressions predicting EAH with covariates [sex + child bmi + age in years+ pre eah fullness, income] (no interactions) -- no effects
+
+```{r}
+model1 <- lm(eah_kcal_consumed ~ bis + Sex + Age.in.years + Child.BMI 
+             + Income + pre_eah_fullness, data = thesis_data)
+summary(model1)
+```
+
+Based on the summary of the model of this multiple regression model we can see that higher BIS scores predicts a lower food intake in kcal ( B=-60, p=0.04) in EAH paradigm.
+
+\pagebreak
+
+**AIM 2: Does maternal risk status moderates the relationship between BIS, BAS and EAH**
+
+```{r}
+#Conducting 2 way ANOVA to see the effect of maternal risk status on EAH in kcal across both the studies
+
+thesis_data$Maternal.risk.status <- as.factor(thesis_data$Maternal.risk.status)
+thesis_data$Study <- as.factor(thesis_data$Study)
+
+anova_model <- aov(eah_kcal_consumed ~ Maternal.risk.status * Study, data = thesis_data)
+summary(anova_model)
+
+#Visualization
+maternal_data <- thesis_data %>% filter(!is.na(Study), !is.na(Maternal.risk.status))
+library(ggplot2)
+ggplot(maternal_data, aes(x = Study, y = eah_kcal_consumed, fill = Maternal.risk.status)) +
+  geom_boxplot() +
+  labs(title = "Effect of Maternal Risk Status on EAH Intake Across Studies",
+       x = "Study",
+       y = "EAH Intake (grams)",
+       fill = "Maternal Risk Status")
+
+
+```
+
+There wasn’t any main effect of maternal risk status ( p=0.87) and study(p=0.89) on EAH intake. Moreover, there wasn’t any interaction effect between maternal risk status and study on EAH intake (p=0.87). Hence we can conclude that effect of maternal risk status on EAH paradigm was consistent in both the studies.
+
+```{r}
+
+#Conducting moderation analysis adjusting for covariates
+lm_eah_kcal_risk <- lm(eah_kcal_consumed ~ bis*Maternal.risk.status + pre_eah_fullness + Study + Child.BMI + Age.in.years + Sex + Income, data = thesis_data)
+
+summary(lm_eah_kcal_risk)
+
+```
+
+After adjusting for sex, child age, child bmi, parent income, Pre EAH fullness scores and study, we conducted moderation analysis. The results revealed a significant interaction between BIS_total and maternal risk status but only for children with low-risk of obesity (B= -131.1, p=0.02), indicating that children at low risk for obesity, a 1 unit increase in BIS corresponds to 131 less kcal consumed during EAH , while children at high risk for obesity, the association between BIS and EAH is not significant.
+
+Making plots
+
+```{r}
+# remove rows with missing values for model variables -- will make it easier to save predicted values to model dataset
+MISSING <- is.na(thesis_data$eah_kcal_consumed) |
+           is.na(thesis_data$bis) |
+           is.na(thesis_data$pre_eah_fullness) |
+           is.na(thesis_data$Study) |
+           is.na(thesis_data$Child.BMI) |
+           is.na(thesis_data$Age.in.years) | 
+          is.na(thesis_data$Sex) | is.na(thesis_data$Maternal.risk.status)
+
+thesis_data_no_na <- subset(thesis_data, 
+                      subset = !MISSING)
+
+#Visualizations
+# plot kcal (raw values)
+ggplot(thesis_data, aes(x = bis, y = eah_kcal_consumed, color = factor(Maternal.risk.status))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, aes(group = Maternal.risk.status)) +
+  labs(x = "bis", y = "eah_kcal_consumed", color = "Maternal.risk.status") + ylim(0, 900)
+
+#3
+ggplot(thesis_data_no_na, aes(x = bis, y = eah_kcal_consumed, color = factor(Maternal.risk.status))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, aes(group = Maternal.risk.status)) +
+  labs(x = "bis", y = "eah_kcal_consumed (adjusted)", color = "Maternal.risk.status")
+```
