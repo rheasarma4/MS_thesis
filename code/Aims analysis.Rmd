@@ -1,10 +1,13 @@
 ---
 title: "Thesis Analysis"
-author: "Rhea Sarma" 
+author: "Rhea Sarma"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  word_document:
+    toc: true
+    toc_depth: '4'
   pdf_document:
-    toc: yes
+    toc: true
     toc_depth: '4'
 header-includes:
 - \usepackage{graphicx}
@@ -17,8 +20,6 @@ editor_options:
 ---
 
 Checking the relationship between BIS, BAS, meal intake and EAH intake variables.
-
-**AIM 1 : Does BIS and BAS influences eating in absence of hunger?**
 
 ```{r}
 library(haven)
@@ -131,7 +132,7 @@ ggplot(thesis_data,aes(eah_kcal_consumed))+geom_histogram(bins=15)+facet_grid(.~
 
 While some of the variables didn't pass the shapiro normality test but after looking at the qqplots of these variables we can consider them as normal.
 
-3.Corrplots
+3.Corrplots between the interested variables
 
 ```{r}
 library(corrplot)
@@ -153,6 +154,10 @@ corrplot(cor_reach, type = "upper", order = "hclust",
 corrplot(cor_fb, type = "upper", order = "hclust", 
          tl.col = "black", tl.srt = 45)
 ```
+
+\pagebreak
+
+**AIM 1 : Does BIS and BAS influences eating in absence of hunger?**
 
 ```{r}
 # 1. Relationship between BIS and EAH
