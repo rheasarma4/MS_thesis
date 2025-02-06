@@ -3,10 +3,10 @@ title: "Thesis analysis"
 author: "Rhea Sarma" 
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  pdf_document:
+  word_document:
     toc: yes
     toc_depth: '4'
-  word_document:
+  pdf_document:
     toc: yes
     toc_depth: '4'
   html_document:
@@ -62,6 +62,7 @@ thesis_data<- read.csv("~/Desktop/Rhea MS thesis/MS_thesis/data/data_compiled.cs
     colnames(thesis_data)[colnames(thesis_data) == "ethnicity"] <- "Ethinicity"
     colnames(thesis_data)[colnames(thesis_data) == "race"] <- "Race"
     colnames(thesis_data)[colnames(thesis_data) == "income"] <- "Income"
+    colnames(thesis_data)[colnames(thesis_data) == "parent1_bmi"] <- "Parent BMI"
 
     # replace factor values with labels that match food and brain 
     thesis_data$Income<-factor(thesis_data$Income,levels=0:5,labels = c("<$20,000","$20,000-$35,000","$36,000-$50,000","$51,000-$75,000","$76,000-$100,000",">$100,000"))
@@ -144,5 +145,209 @@ thesis_data %>%
               digits = all_continuous() ~ 2) %>% 
   add_overall() %>% 
   modify_spanning_header(c("stat_1", "stat_2") ~ "**Participant's demographics by study**")
+
+```
+
+8.  Generating demographics table by `risk status` with means and SD. `Unknown` indicates missing data
+
+```{r}
+thesis_data %>% 
+  select(!c(participant_id, pre_meal_fullness, pre_eah_fullness, meal_grams_consumed, 
+            meal_kcal_consumed, eah_grams_consumed_foodonly, bis, bas, bas_funseeking, 
+            bas_drive, bas_rewardresp, eah_kcal_consumed, fb_meal_consumed_applesauce_kcal, 
+            fb_meal_consumed_applesauce_g, fb_meal_consumed_carrot_g, 
+            fb_meal_consumed_carrot_kcal, fb_meal_consumed_cheese_sndwch_g, 
+            fb_meal_consumed_cheese_sndwch_kcal, fb_meal_consumed_cookies_g, 
+            fb_meal_consumed_cookies_kcal, fb_meal_consumed_ham_sndwch_g, 
+            fb_meal_consumed_ham_sndwch_kcal, fb_meal_consumed_milk_g, 
+            fb_meal_consumed_milk_kcal, fb_meal_consumed_pbj_sndwch_g, 
+            fb_meal_consumed_pbj_sndwch_kcal, fb_meal_consumed_potatochip_g, 
+            fb_meal_consumed_potatochip_kcal, fb_meal_consumed_turkey_sndwch_g, 
+            fb_meal_consumed_turkey_sndwch_kcal, fb_meal_consumed_ketchup_g, 
+            fb_meal_consumed_ketchup_kcal, fb_meal_consumed_mayo_g, fb_meal_consumed_mayo_kcal,              fb_meal_consumed_mustard_g, fb_meal_consumed_mustard_kcal, 
+            fb_eah_consumed_brownies_g, fb_eah_consumed_brownies_kcal, 
+            fb_eah_consumed_cornchips_g, fb_eah_consumed_cornchips_kcal, 
+            fb_eah_consumed_hersheys_g, fb_eah_consumed_hersheys_kcal, 
+            fb_eah_consumed_icecream_g, fb_eah_consumed_icecream_kcal, 
+            fb_eah_consumed_oreos_g, fb_eah_consumed_oreos_kcal, fb_eah_consumed_popcorn_g, 
+            fb_eah_consumed_popcorn_kcal, fb_eah_consumed_pretzels_g, 
+            fb_eah_consumed_pretzels_kcal, fb_eah_consumed_skittles_g, 
+            fb_eah_consumed_skittles_kcal, fb_eah_consumed_starbursts_g, 
+            fb_eah_consumed_starbursts_kcal, fb_eah_consumed_water_g, 
+            reach_eah_brownie_grams_consumed, reach_eah_brownie_kcal_consumed, 
+            reach_eah_corn_chip_grams_consumed, reach_eah_corn_chip_kcal_consumed, 
+            reach_eah_ice_cream_grams_consumed, reach_eah_ice_cream_kcal_consumed, 
+            reach_eah_kiss_grams_consumed, reach_eah_kiss_kcal_consumed, 
+            reach_eah_oreo_grams_consumed, reach_eah_oreo_kcal_consumed, 
+            reach_eah_popcorn_grams_consumed, reach_eah_popcorn_kcal_consumed, 
+            reach_eah_pretzel_grams_consumed, reach_eah_pretzel_kcal_consumed, 
+            reach_eah_skittle_grams_consumed, reach_eah_skittle_kcal_consumed, 
+            reach_eah_starburst_grams_consumed, reach_eah_starburst_kcal_consumed, 
+            reach_eah_water_eah_grams_consumed, reach_eah_water_eah_kcal_consumed, 
+            reach_meal_grilled_cheese_grams_consumed, reach_meal_grilled_cheese_kcal_consumed, 
+            reach_meal_carrot_grams_consumed, reach_meal_carrot_kcal_consumed, 
+            reach_meal_chips_grams_consumed, reach_meal_chips_kcal_consumed, 
+            reach_meal_fruit_grams_consumed, reach_meal_fruit_kcal_consumed, 
+            reach_meal_ketchup_grams_consumed, reach_meal_ketchup_kcal_consumed, 
+            reach_meal_ranch_grams_consumed, reach_meal_ranch_kcal_consumed, 
+            reach_meal_water_grams_consumed, reach_meal_water_kcal_consumed, 
+            cebq_sr, cebq_avoid, cebq_eue, cebq_ff, cebq_fr, cebq_se, 
+            meal_grams_consumed_inc_water, eah_grams_consumed_inc_water, 
+            total_grams_consumed_inc_water, total_kcal_consumed, reach_meal_tender_grams_consumed, 
+            reach_meal_tender_kcal_consumed, total_grams_consumed)) %>% 
+  tbl_summary(by = `Maternal risk status`, 
+              statistic = list(all_continuous() ~ "{mean} ({sd})", 
+                               all_categorical() ~ "{n} / {N} ({p}%)"), 
+              digits = all_continuous() ~ 2) %>% 
+  add_overall() %>% 
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Participant's demographics by risk statu**")
+```
+
+9.  Adding and merging food item columns from both the studies
+
+    ```{r}
+    #EAH sweet data for all in grams
+    thesis_data<-thesis_data %>%
+        mutate(all_eah_brownies_g = coalesce(fb_eah_consumed_brownies_g, reach_eah_brownie_grams_consumed),
+               all_eah_hersheys_g = coalesce(fb_eah_consumed_hersheys_g, reach_eah_kiss_grams_consumed),
+               all_eah_icecream_g = coalesce(fb_eah_consumed_icecream_g, reach_eah_ice_cream_grams_consumed),
+               all_eah_oreos_g = coalesce(fb_eah_consumed_oreos_g, reach_eah_oreo_grams_consumed),
+               all_eah_skittles_g = coalesce(fb_eah_consumed_skittles_g, reach_eah_skittle_grams_consumed),
+               all_eah_starbursts_g = coalesce(fb_eah_consumed_starbursts_g, reach_eah_starburst_grams_consumed))
+
+    #EAH salty data for all in grams
+    thesis_data<-thesis_data %>%
+        mutate(all_eah_cornchips_g = coalesce(fb_eah_consumed_cornchips_g, reach_eah_corn_chip_grams_consumed),
+               all_eah_popcorn_g = coalesce(fb_eah_consumed_popcorn_g, reach_eah_popcorn_grams_consumed),
+               all_eah_pretzels_g = coalesce(fb_eah_consumed_pretzels_g, reach_eah_pretzel_grams_consumed))
+
+    #EAH sweet data for all in kcal
+    thesis_data<-thesis_data %>%
+        mutate(all_eah_brownies_kcal = coalesce(fb_eah_consumed_brownies_kcal, reach_eah_brownie_kcal_consumed),
+               all_eah_hersheys_kcal = coalesce(fb_eah_consumed_hersheys_kcal, reach_eah_kiss_kcal_consumed),
+               all_eah_icecream_kcal = coalesce(fb_eah_consumed_icecream_kcal, reach_eah_ice_cream_kcal_consumed),
+               all_eah_oreos_kcal = coalesce(fb_eah_consumed_oreos_kcal, reach_eah_oreo_kcal_consumed),
+               all_eah_skittles_kcal = coalesce(fb_eah_consumed_skittles_kcal, reach_eah_skittle_kcal_consumed),
+               all_eah_starbursts_kcal = coalesce(fb_eah_consumed_starbursts_kcal, reach_eah_starburst_kcal_consumed))
+
+    #EAH salty data for all in kcal
+    thesis_data<-thesis_data %>%
+        mutate(all_eah_cornchips_kcal = coalesce(fb_eah_consumed_cornchips_kcal, reach_eah_corn_chip_kcal_consumed),
+               all_eah_popcorn_kcal = coalesce(fb_eah_consumed_popcorn_kcal, reach_eah_popcorn_kcal_consumed),
+               all_eah_pretzels_kcal = coalesce(fb_eah_consumed_pretzels_kcal, reach_eah_pretzel_kcal_consumed))
+    ```
+
+10. Food intake by `risk status`
+
+```{r}
+thesis_data %>% 
+  select(!c(participant_id, pre_meal_fullness, pre_eah_fullness,Study,Sex, `Age in years`,`Measured Parent`,Ethinicity, Income, Race, bis, bas, bas_funseeking, 
+            bas_drive, bas_rewardresp, fb_meal_consumed_applesauce_kcal, 
+            fb_meal_consumed_applesauce_g, fb_meal_consumed_carrot_g, 
+            fb_meal_consumed_carrot_kcal, fb_meal_consumed_cheese_sndwch_g, 
+            fb_meal_consumed_cheese_sndwch_kcal, fb_meal_consumed_cookies_g, 
+            fb_meal_consumed_cookies_kcal, fb_meal_consumed_ham_sndwch_g, 
+            fb_meal_consumed_ham_sndwch_kcal, fb_meal_consumed_milk_g, 
+            fb_meal_consumed_milk_kcal, fb_meal_consumed_pbj_sndwch_g, 
+            fb_meal_consumed_pbj_sndwch_kcal, fb_meal_consumed_potatochip_g, 
+            fb_meal_consumed_potatochip_kcal, fb_meal_consumed_turkey_sndwch_g, 
+            fb_meal_consumed_turkey_sndwch_kcal, fb_meal_consumed_ketchup_g, 
+            fb_meal_consumed_ketchup_kcal, fb_meal_consumed_mayo_g, fb_meal_consumed_mayo_kcal,              fb_meal_consumed_mustard_g, fb_meal_consumed_mustard_kcal, 
+            fb_eah_consumed_brownies_g, fb_eah_consumed_brownies_kcal, 
+            fb_eah_consumed_cornchips_g, fb_eah_consumed_cornchips_kcal, 
+            fb_eah_consumed_hersheys_g, fb_eah_consumed_hersheys_kcal, 
+            fb_eah_consumed_icecream_g, fb_eah_consumed_icecream_kcal, 
+            fb_eah_consumed_oreos_g, fb_eah_consumed_oreos_kcal, fb_eah_consumed_popcorn_g, 
+            fb_eah_consumed_popcorn_kcal, fb_eah_consumed_pretzels_g, 
+            fb_eah_consumed_pretzels_kcal, fb_eah_consumed_skittles_g, 
+            fb_eah_consumed_skittles_kcal, fb_eah_consumed_starbursts_g, 
+            fb_eah_consumed_starbursts_kcal, fb_eah_consumed_water_g, 
+            reach_eah_brownie_grams_consumed, reach_eah_brownie_kcal_consumed, 
+            reach_eah_corn_chip_grams_consumed, reach_eah_corn_chip_kcal_consumed, 
+            reach_eah_ice_cream_grams_consumed, reach_eah_ice_cream_kcal_consumed, 
+            reach_eah_kiss_grams_consumed, reach_eah_kiss_kcal_consumed, 
+            reach_eah_oreo_grams_consumed, reach_eah_oreo_kcal_consumed, 
+            reach_eah_popcorn_grams_consumed, reach_eah_popcorn_kcal_consumed, 
+            reach_eah_pretzel_grams_consumed, reach_eah_pretzel_kcal_consumed, 
+            reach_eah_skittle_grams_consumed, reach_eah_skittle_kcal_consumed, 
+            reach_eah_starburst_grams_consumed, reach_eah_starburst_kcal_consumed, 
+            reach_eah_water_eah_grams_consumed, reach_eah_water_eah_kcal_consumed, 
+            reach_meal_grilled_cheese_grams_consumed, reach_meal_grilled_cheese_kcal_consumed, 
+            reach_meal_carrot_grams_consumed, reach_meal_carrot_kcal_consumed, 
+            reach_meal_chips_grams_consumed, reach_meal_chips_kcal_consumed, 
+            reach_meal_fruit_grams_consumed, reach_meal_fruit_kcal_consumed, 
+            reach_meal_ketchup_grams_consumed, reach_meal_ketchup_kcal_consumed, 
+            reach_meal_ranch_grams_consumed, reach_meal_ranch_kcal_consumed, 
+            reach_meal_water_grams_consumed, reach_meal_water_kcal_consumed, 
+            cebq_sr, cebq_avoid, cebq_eue, cebq_ff, cebq_fr, cebq_se, 
+            meal_grams_consumed_inc_water, eah_grams_consumed_inc_water, 
+            total_grams_consumed_inc_water, total_kcal_consumed, reach_meal_tender_grams_consumed, 
+            reach_meal_tender_kcal_consumed, total_grams_consumed)) %>% 
+  tbl_summary(by = `Maternal risk status`, 
+              statistic = list(all_continuous() ~ "{mean} ({sd})", 
+                               all_categorical() ~ "{n} / {N} ({p}%)"), 
+              digits = all_continuous() ~ 2) %>% 
+  add_overall() %>% 
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Participant's demographics by risk status**")
+```
+
+11. Food intake by `study`
+
+```{r}
+thesis_data %>% 
+  select(!c(participant_id, pre_meal_fullness, pre_eah_fullness,`Maternal risk status`,Sex, `Age in years`,`Child BMI z-score`, `Child BMI`,`Child BMI percentile`,`Measured Parent`,Ethinicity, Income, Race, bis, bas, bas_funseeking, 
+            bas_drive, bas_rewardresp, fb_meal_consumed_applesauce_kcal, 
+            fb_meal_consumed_applesauce_g, fb_meal_consumed_carrot_g, 
+            fb_meal_consumed_carrot_kcal, fb_meal_consumed_cheese_sndwch_g, 
+            fb_meal_consumed_cheese_sndwch_kcal, fb_meal_consumed_cookies_g, 
+            fb_meal_consumed_cookies_kcal, fb_meal_consumed_ham_sndwch_g, 
+            fb_meal_consumed_ham_sndwch_kcal, fb_meal_consumed_milk_g, 
+            fb_meal_consumed_milk_kcal, fb_meal_consumed_pbj_sndwch_g, 
+            fb_meal_consumed_pbj_sndwch_kcal, fb_meal_consumed_potatochip_g, 
+            fb_meal_consumed_potatochip_kcal, fb_meal_consumed_turkey_sndwch_g, 
+            fb_meal_consumed_turkey_sndwch_kcal, fb_meal_consumed_ketchup_g, 
+            fb_meal_consumed_ketchup_kcal, fb_meal_consumed_mayo_g, fb_meal_consumed_mayo_kcal,              fb_meal_consumed_mustard_g, fb_meal_consumed_mustard_kcal, 
+            fb_eah_consumed_brownies_g, fb_eah_consumed_brownies_kcal, 
+            fb_eah_consumed_cornchips_g, fb_eah_consumed_cornchips_kcal, 
+            fb_eah_consumed_hersheys_g, fb_eah_consumed_hersheys_kcal, 
+            fb_eah_consumed_icecream_g, fb_eah_consumed_icecream_kcal, 
+            fb_eah_consumed_oreos_g, fb_eah_consumed_oreos_kcal, fb_eah_consumed_popcorn_g, 
+            fb_eah_consumed_popcorn_kcal, fb_eah_consumed_pretzels_g, 
+            fb_eah_consumed_pretzels_kcal, fb_eah_consumed_skittles_g, 
+            fb_eah_consumed_skittles_kcal, fb_eah_consumed_starbursts_g, 
+            fb_eah_consumed_starbursts_kcal, fb_eah_consumed_water_g, 
+            reach_eah_brownie_grams_consumed, reach_eah_brownie_kcal_consumed, 
+            reach_eah_corn_chip_grams_consumed, reach_eah_corn_chip_kcal_consumed, 
+            reach_eah_ice_cream_grams_consumed, reach_eah_ice_cream_kcal_consumed, 
+            reach_eah_kiss_grams_consumed, reach_eah_kiss_kcal_consumed, 
+            reach_eah_oreo_grams_consumed, reach_eah_oreo_kcal_consumed, 
+            reach_eah_popcorn_grams_consumed, reach_eah_popcorn_kcal_consumed, 
+            reach_eah_pretzel_grams_consumed, reach_eah_pretzel_kcal_consumed, 
+            reach_eah_skittle_grams_consumed, reach_eah_skittle_kcal_consumed, 
+            reach_eah_starburst_grams_consumed, reach_eah_starburst_kcal_consumed, 
+            reach_eah_water_eah_grams_consumed, reach_eah_water_eah_kcal_consumed, 
+            reach_meal_grilled_cheese_grams_consumed, reach_meal_grilled_cheese_kcal_consumed, 
+            reach_meal_carrot_grams_consumed, reach_meal_carrot_kcal_consumed, 
+            reach_meal_chips_grams_consumed, reach_meal_chips_kcal_consumed, 
+            reach_meal_fruit_grams_consumed, reach_meal_fruit_kcal_consumed, 
+            reach_meal_ketchup_grams_consumed, reach_meal_ketchup_kcal_consumed, 
+            reach_meal_ranch_grams_consumed, reach_meal_ranch_kcal_consumed, 
+            reach_meal_water_grams_consumed, reach_meal_water_kcal_consumed, 
+            cebq_sr, cebq_avoid, cebq_eue, cebq_ff, cebq_fr, cebq_se, 
+            meal_grams_consumed_inc_water, eah_grams_consumed_inc_water, 
+            total_grams_consumed_inc_water, total_kcal_consumed, reach_meal_tender_grams_consumed, 
+            reach_meal_tender_kcal_consumed, total_grams_consumed)) %>% 
+  tbl_summary(by = Study, 
+              statistic = list(all_continuous() ~ "{mean} ({sd})", 
+                               all_categorical() ~ "{n} / {N} ({p}%)"), 
+              digits = all_continuous() ~ 2) %>% 
+  add_overall() %>% 
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Participant's demographics by study**")
+```
+
+```{r}
+t.test(thesis_data[thesis_data$`Maternal risk status` == "low-risk",]$`Child BMI z-score`, 
+       thesis_data[thesis_data$`Maternal risk status`  == "high-risk",]$`Child BMI z-score`,
+       alternative = "two.sided", var.equal = TRUE)
 
 ```

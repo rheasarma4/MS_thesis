@@ -282,7 +282,7 @@ ggplot(maternal_data, aes(x = Study, y = eah_kcal_consumed, fill = Maternal.risk
   geom_boxplot() +
   labs(title = "Effect of Maternal Risk Status on EAH Intake Across Studies",
        x = "Study",
-       y = "EAH Intake (grams)",
+       y = "EAH Intake (kcal)",
        fill = "Maternal Risk Status")
 
 
@@ -328,4 +328,65 @@ ggplot(thesis_data_no_na, aes(x = bis, y = eah_kcal_consumed, color = factor(Mat
   geom_point() +
   geom_smooth(method = "lm", se = TRUE, aes(group = Maternal.risk.status)) +
   labs(x = "bis", y = "eah_kcal_consumed (adjusted)", color = "Maternal.risk.status")
+```
+
+Adding and merging food item columns from both the studies
+
+```{r}
+#EAH sweet data for all in grams
+thesis_data<-thesis_data %>%
+    mutate(all_eah_brownies_g = coalesce(fb_eah_consumed_brownies_g, reach_eah_brownie_grams_consumed),
+           all_eah_hersheys_g = coalesce(fb_eah_consumed_hersheys_g, reach_eah_kiss_grams_consumed),
+           all_eah_icecream_g = coalesce(fb_eah_consumed_icecream_g, reach_eah_ice_cream_grams_consumed),
+           all_eah_oreos_g = coalesce(fb_eah_consumed_oreos_g, reach_eah_oreo_grams_consumed),
+           all_eah_skittles_g = coalesce(fb_eah_consumed_skittles_g, reach_eah_skittle_grams_consumed),
+           all_eah_starbursts_g = coalesce(fb_eah_consumed_starbursts_g, reach_eah_starburst_grams_consumed))
+
+#EAH salty data for all in grams
+thesis_data<-thesis_data %>%
+    mutate(all_eah_cornchips_g = coalesce(fb_eah_consumed_cornchips_g, reach_eah_corn_chip_grams_consumed),
+           all_eah_popcorn_g = coalesce(fb_eah_consumed_popcorn_g, reach_eah_popcorn_grams_consumed),
+           all_eah_pretzels_g = coalesce(fb_eah_consumed_pretzels_g, reach_eah_pretzel_grams_consumed))
+
+#EAH sweet data for all in kcal
+thesis_data<-thesis_data %>%
+    mutate(all_eah_brownies_kcal = coalesce(fb_eah_consumed_brownies_kcal, reach_eah_brownie_kcal_consumed),
+           all_eah_hersheys_kcal = coalesce(fb_eah_consumed_hersheys_kcal, reach_eah_kiss_kcal_consumed),
+           all_eah_icecream_kcal = coalesce(fb_eah_consumed_icecream_kcal, reach_eah_ice_cream_kcal_consumed),
+           all_eah_oreos_kcal = coalesce(fb_eah_consumed_oreos_kcal, reach_eah_oreo_kcal_consumed),
+           all_eah_skittles_kcal = coalesce(fb_eah_consumed_skittles_kcal, reach_eah_skittle_kcal_consumed),
+           all_eah_starbursts_kcal = coalesce(fb_eah_consumed_starbursts_kcal, reach_eah_starburst_kcal_consumed))
+
+#EAH salty data for all in kcal
+thesis_data<-thesis_data %>%
+    mutate(all_eah_cornchips_kcal = coalesce(fb_eah_consumed_cornchips_kcal, reach_eah_corn_chip_kcal_consumed),
+           all_eah_popcorn_kcal = coalesce(fb_eah_consumed_popcorn_kcal, reach_eah_popcorn_kcal_consumed),
+           all_eah_pretzels_kcal = coalesce(fb_eah_consumed_pretzels_kcal, reach_eah_pretzel_kcal_consumed))
+```
+
+Additional analysis on seperate food items
+
+```{r}
+library(corrplot)
+
+cor_all_eah_sweet_grams <- cor(thesis_data[c("bis","bas","bas_funseeking","bas_drive", "bas_rewardresp","all_eah_brownies_g","all_eah_hersheys_g", "all_eah_icecream_g", "all_eah_oreos_g","all_eah_skittles_g", "all_eah_starbursts_g")], use = "pairwise.complete.obs")
+
+cor_all_eah_salty_grams <- cor(thesis_data[c("bis","bas","bas_funseeking","bas_drive", "bas_rewardresp", "all_eah_cornchips_g", "all_eah_popcorn_g", "all_eah_pretzels_g")], use = "pairwise.complete.obs")
+
+cor_all_eah_sweet_kcal <- cor(thesis_data[c("bis","bas","bas_funseeking","bas_drive", "bas_rewardresp","all_eah_brownies_kcal","all_eah_hersheys_kcal", "all_eah_icecream_kcal", "all_eah_oreos_kcal","all_eah_skittles_kcal", "all_eah_starbursts_kcal")], use = "pairwise.complete.obs")
+
+cor_all_eah_salty_kcal <- cor(thesis_data[c("bis","bas","bas_funseeking","bas_drive", "bas_rewardresp", "all_eah_cornchips_kcal", "all_eah_popcorn_kcal", "all_eah_pretzels_kcal")], use = "pairwise.complete.obs")
+
+
+corrplot(cor_all_eah_sweet_grams, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 100)
+
+corrplot(cor_all_eah_salty_grams, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 100)
+
+corrplot(cor_all_eah_sweet_kcal, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 100)
+
+corrplot(cor_all_eah_salty_kcal, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 100)
 ```
